@@ -68,13 +68,79 @@ fun FitnessApp() {
 
 @Composable
 fun HomePage() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    var steps by remember { mutableStateOf(3500) } // mock current steps
+    val dailyGoal = 10000
+    val caloriesBurned = steps * 0.04
+    val progress = (steps.toFloat() / dailyGoal).coerceIn(0f, 1f)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        Text(text = "Home Page - Steps, Calories, etc.", fontSize = 20.sp)
+        // Daily Summary
+        Text(
+            text = "Today's Progress",
+            fontSize = 24.sp,
+            style = MaterialTheme.typography.headlineSmall
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Key Stats Row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            StatCard(label = "Steps", value = "$steps")
+            StatCard(label = "Calories", value = "${"%.0f".format(caloriesBurned)} kcal")
+            StatCard(label = "Goal", value = "$dailyGoal")
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Progress Bar
+        LinearProgressIndicator(
+            progress = progress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "${(progress * 100).toInt()}% of daily goal",
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Quick actions
+        Text(text = "Quick Actions", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = { steps += 500 }) {
+                Text("Simulate Steps")
+            }
+            Button(onClick = { steps = 0 }) {
+                Text("Reset")
+            }
+        }
     }
 }
+
+@Composable
+fun StatCard(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = value, fontSize = 20.sp, style = MaterialTheme.typography.bodyLarge)
+        Text(text = label, fontSize = 14.sp, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+
 
 @Composable
 fun WorkoutsPage() {
